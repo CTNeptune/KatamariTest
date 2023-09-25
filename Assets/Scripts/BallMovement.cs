@@ -12,9 +12,17 @@ public class BallMovement : MonoBehaviour
     public Rigidbody _BallRigidbody;
     public float _BallSpeed;
 
+    public SphereCollider _BallCollider;
+    public LayerMask _PickupMask;
+    public int _PostCollectPickupLayer; //This should align with the "CollectedPickups" layer
+    public float _SizeAdjustPadding = 1.05f;
+    public float _PickupSpeedScale = 2f;
+
     private KatamariInput mInput;
     private Vector2 mMoveInput;
 
+    private List<Pickup> mCollectedPickups = new List<Pickup>();
+    
     /// <summary>
     /// In start we create a new instance of KatamariInput, a class generated with Unity's new Input System.
     /// Subscribe our OnMoveBall and OnMoveCamera methods to the MoveBall and MoveCamera events raised from KatamariInput, then enable the input.
@@ -79,5 +87,66 @@ public class BallMovement : MonoBehaviour
 
         _FreeLookComponent.m_XAxis.Value += inputDelta.x;
         _FreeLookComponent.m_YAxis.Value += inputDelta.y;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if ((_PickupMask & (1 << collision.gameObject.layer)) == 0)
+            return;
+
+        Pickup pickup = collision.gameObject.GetComponent<Pickup>();
+        
+        if (!pickup || mCollectedPickups.Contains(pickup))
+            return;
+
+        ProcessCollision(pickup);
+    }
+
+    private void ProcessCollision(Pickup inPickup)
+    {
+        if (!IsCollidedObjectBigger(inPickup._Collider))
+            return;
+
+        AddPickupToBall(inPickup);
+        AdjustBallSize();
+        _BallRigidbody.mass += inPickup._Rigidbody.mass;
+        _BallSpeed += inPickup._Rigidbody.mass * _PickupSpeedScale;
+    }
+
+    private bool IsCollidedObjectBigger(Collider collider)
+    {
+        Vector3 colliderSize = collider.bounds.size;
+        if (colliderSize.x < _BallCollider.bounds.size.x || colliderSize.y < _BallCollider.bounds.size.y || colliderSize.z < _BallCollider.bounds.size.z)
+            return true;
+
+        Vector3 colliderScale = collider.transform.localScale;
+        if (colliderScale.x < transform.localScale.x || colliderScale.y < transform.localScale.y || colliderScale.z < transform.localScale.z)
+            return true;
+
+        return false;
+    }
+
+    private void AddPickupToBall(Pickup inPickup)
+    {
+        inPickup.gameObject.layer = _PostCollectPickupLayer;
+        inPickup.transform.SetParent(transform, true);
+
+        FixedJoint joint = inPickup.gameObject.AddComponent<FixedJoint>();
+        joint.connectedBody = _BallRigidbody;
+
+        inPickup._Rigidbody.useGravity = false;
+        mCollectedPickups.Add(inPickup);
+    }
+
+    private void AdjustBallSize()
+    {
+        Bounds totalBounds = _BallCollider.bounds;
+
+        for (int i = 1; i < mCollectedPickups.Count; i++)
+            totalBounds.Encapsulate(mCollectedPickups[i]._Collider.bounds);
+
+        float scaleFactor = totalBounds.extents.magnitude / _BallCollider.bounds.extents.magnitude;
+
+        _BallCollider.radius *= scaleFactor * _SizeAdjustPadding;
     }
 }

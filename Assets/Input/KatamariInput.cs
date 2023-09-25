@@ -29,12 +29,12 @@ public partial class @KatamariInput: IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""MoveBall"",
-                    ""type"": ""Value"",
+                    ""type"": ""PassThrough"",
                     ""id"": ""a13d6728-512c-44a6-aecb-cc0c7daa4bdc"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""MoveCamera"",
