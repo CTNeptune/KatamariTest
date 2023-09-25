@@ -7,12 +7,12 @@
             "actions": [
                 {
                     "name": "MoveBall",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "a13d6728-512c-44a6-aecb-cc0c7daa4bdc",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "MoveCamera",
@@ -27,50 +27,6 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "981c5d01-77d7-47fa-878b-38fbba79896d",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KBM",
-                    "action": "MoveBall",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "734d2df7-b4cd-4d0d-95dc-f1d46015ce56",
-                    "path": "<Keyboard>/a",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KBM",
-                    "action": "MoveBall",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "edcaf858-ff2b-4b3c-8e6b-9d22d8b0f318",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KBM",
-                    "action": "MoveBall",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2326677d-63d7-4384-9880-d814b9323bc7",
-                    "path": "<Keyboard>/d",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KBM",
-                    "action": "MoveBall",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "4d0deda1-06b7-45dc-b6cb-83a01cf3071f",
                     "path": "<Mouse>/delta",
                     "interactions": "",
@@ -79,6 +35,61 @@
                     "action": "MoveCamera",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "WASD",
+                    "id": "971351cf-ddad-4f56-94ec-0ae2fc862106",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveBall",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "4247b9bc-cb96-4a93-8bd2-810385c0acaa",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KBM",
+                    "action": "MoveBall",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "a3570bc9-357c-4f1e-ac87-f9a87f3bec42",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KBM",
+                    "action": "MoveBall",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "357939ef-8682-41d7-98c6-6f6dc118f281",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KBM",
+                    "action": "MoveBall",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "fe322a9f-7c5f-4464-8b9f-e7824b78227c",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KBM",
+                    "action": "MoveBall",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }
