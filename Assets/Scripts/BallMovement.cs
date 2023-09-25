@@ -32,6 +32,8 @@ public class BallMovement : MonoBehaviour
     public int _PickupsLayer; //This should align with the "Pickups" layer
     public int _InversePickupsLayer; //This should align with the "InversePickups" layer
     public int _PortalLayer; //This should align with the "Portal" layer
+    public int _NormalEnvironmentLayer; //This should align with the "NormalEnvironment" layer
+    public int _InverseEnvironmentLayer; //This should align with the "InverseEnvironment" layer
 
     public PostProcessVolume _NormalPostProcessVolume;
     public PostProcessVolume _InvertedPostProcessVolume;
@@ -218,12 +220,22 @@ public class BallMovement : MonoBehaviour
         if (mInverseCollisionEnabled)
         {
             Physics.IgnoreLayerCollision(_PlayerLayer, _PickupsLayer, true);
+            Physics.IgnoreLayerCollision(_PlayerLayer, _NormalEnvironmentLayer, true);
+            Physics.IgnoreLayerCollision(_PostCollectPickupLayer, _NormalEnvironmentLayer, true);
+
             Physics.IgnoreLayerCollision(_PlayerLayer, _InversePickupsLayer, false);
+            Physics.IgnoreLayerCollision(_PlayerLayer, _InverseEnvironmentLayer, false);
+            Physics.IgnoreLayerCollision(_PostCollectPickupLayer, _InverseEnvironmentLayer, false);
         }
         else
         {
             Physics.IgnoreLayerCollision(_PlayerLayer, _PickupsLayer, false);
+            Physics.IgnoreLayerCollision(_PlayerLayer, _NormalEnvironmentLayer, false);
+            Physics.IgnoreLayerCollision(_PostCollectPickupLayer, _NormalEnvironmentLayer, false);
+
             Physics.IgnoreLayerCollision(_PlayerLayer, _InversePickupsLayer, true);
+            Physics.IgnoreLayerCollision(_PlayerLayer, _InverseEnvironmentLayer, true);
+            Physics.IgnoreLayerCollision(_PostCollectPickupLayer, _InverseEnvironmentLayer, true);
         }
     }
 

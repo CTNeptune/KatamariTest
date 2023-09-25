@@ -17,8 +17,8 @@ TagManager:
   - InversePickups
   - PostProcessing
   - Portal
-  - 
-  - 
+  - NormalEnvironment
+  - InverseEnvironment
   - 
   - 
   - 
