@@ -111,6 +111,8 @@ public class BallMovement : MonoBehaviour
         AdjustBallSize();
         _BallRigidbody.mass += inPickup._Rigidbody.mass;
         _BallSpeed += inPickup._Rigidbody.mass * _PickupSpeedScale;
+
+        GamePlayManager.pInstance.AddToScore(_BallCollider.radius);
     }
 
     private bool IsCollidedObjectBigger(Collider collider)
