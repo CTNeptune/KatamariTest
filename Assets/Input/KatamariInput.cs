@@ -44,6 +44,15 @@ public partial class @KatamariInput: IInputActionCollection2, IDisposable
                     ""processors"": ""ScaleVector2(y=0.01)"",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""SwitchDimension"",
+                    ""type"": ""Button"",
+                    ""id"": ""18a44f28-99f5-48f8-80fc-c02ccf823f12"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -112,6 +121,17 @@ public partial class @KatamariInput: IInputActionCollection2, IDisposable
                     ""action"": ""MoveBall"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dfa6cd41-41bd-4a74-9474-cb106527811c"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KBM"",
+                    ""action"": ""SwitchDimension"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -139,6 +159,7 @@ public partial class @KatamariInput: IInputActionCollection2, IDisposable
         m_Ball = asset.FindActionMap("Ball", throwIfNotFound: true);
         m_Ball_MoveBall = m_Ball.FindAction("MoveBall", throwIfNotFound: true);
         m_Ball_MoveCamera = m_Ball.FindAction("MoveCamera", throwIfNotFound: true);
+        m_Ball_SwitchDimension = m_Ball.FindAction("SwitchDimension", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -202,12 +223,14 @@ public partial class @KatamariInput: IInputActionCollection2, IDisposable
     private List<IBallActions> m_BallActionsCallbackInterfaces = new List<IBallActions>();
     private readonly InputAction m_Ball_MoveBall;
     private readonly InputAction m_Ball_MoveCamera;
+    private readonly InputAction m_Ball_SwitchDimension;
     public struct BallActions
     {
         private @KatamariInput m_Wrapper;
         public BallActions(@KatamariInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @MoveBall => m_Wrapper.m_Ball_MoveBall;
         public InputAction @MoveCamera => m_Wrapper.m_Ball_MoveCamera;
+        public InputAction @SwitchDimension => m_Wrapper.m_Ball_SwitchDimension;
         public InputActionMap Get() { return m_Wrapper.m_Ball; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -223,6 +246,9 @@ public partial class @KatamariInput: IInputActionCollection2, IDisposable
             @MoveCamera.started += instance.OnMoveCamera;
             @MoveCamera.performed += instance.OnMoveCamera;
             @MoveCamera.canceled += instance.OnMoveCamera;
+            @SwitchDimension.started += instance.OnSwitchDimension;
+            @SwitchDimension.performed += instance.OnSwitchDimension;
+            @SwitchDimension.canceled += instance.OnSwitchDimension;
         }
 
         private void UnregisterCallbacks(IBallActions instance)
@@ -233,6 +259,9 @@ public partial class @KatamariInput: IInputActionCollection2, IDisposable
             @MoveCamera.started -= instance.OnMoveCamera;
             @MoveCamera.performed -= instance.OnMoveCamera;
             @MoveCamera.canceled -= instance.OnMoveCamera;
+            @SwitchDimension.started -= instance.OnSwitchDimension;
+            @SwitchDimension.performed -= instance.OnSwitchDimension;
+            @SwitchDimension.canceled -= instance.OnSwitchDimension;
         }
 
         public void RemoveCallbacks(IBallActions instance)
@@ -263,5 +292,6 @@ public partial class @KatamariInput: IInputActionCollection2, IDisposable
     {
         void OnMoveBall(InputAction.CallbackContext context);
         void OnMoveCamera(InputAction.CallbackContext context);
+        void OnSwitchDimension(InputAction.CallbackContext context);
     }
 }

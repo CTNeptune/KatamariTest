@@ -22,6 +22,15 @@
                     "processors": "ScaleVector2(y=0.01)",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "SwitchDimension",
+                    "type": "Button",
+                    "id": "18a44f28-99f5-48f8-80fc-c02ccf823f12",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -90,6 +99,17 @@
                     "action": "MoveBall",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "dfa6cd41-41bd-4a74-9474-cb106527811c",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KBM",
+                    "action": "SwitchDimension",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

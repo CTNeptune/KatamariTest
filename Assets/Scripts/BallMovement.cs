@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Cinemachine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class BallMovement : MonoBehaviour
 {
@@ -13,7 +14,10 @@ public class BallMovement : MonoBehaviour
     public float _BallSpeed;
 
     public SphereCollider _BallCollider;
-    public LayerMask _PickupMask;
+
+    public LayerMask _NormalCameraLayerMask;
+    public LayerMask _InverseCameraLayerMask;
+
     public int _PostCollectPickupLayer; //This should align with the "CollectedPickups" layer
     public float _SizeAdjustPadding = 1.05f;
     public float _PickupSpeedScale = 2f;
@@ -22,7 +26,22 @@ public class BallMovement : MonoBehaviour
     private Vector2 mMoveInput;
 
     private List<Pickup> mCollectedPickups = new List<Pickup>();
-    
+
+    private bool mInverseCollisionEnabled;
+    public int _PlayerLayer; //This should align with the "Player" layer
+    public int _PickupsLayer; //This should align with the "Pickups" layer
+    public int _InversePickupsLayer; //This should align with the "InversePickups" layer
+    public int _PortalLayer; //This should align with the "Portal" layer
+
+    public PostProcessVolume _NormalPostProcessVolume;
+    public PostProcessVolume _InvertedPostProcessVolume;
+    public float lerpDuration = 2f;
+
+    private LensDistortion mNormalLensDistortion;
+    private LensDistortion mInvertedLensDistortion;
+
+    private bool mAbleToSwitchDimension;
+
     /// <summary>
     /// In start we create a new instance of KatamariInput, a class generated with Unity's new Input System.
     /// Subscribe our OnMoveBall and OnMoveCamera methods to the MoveBall and MoveCamera events raised from KatamariInput, then enable the input.
@@ -32,8 +51,22 @@ public class BallMovement : MonoBehaviour
         mInput = new KatamariInput();
         mInput.Ball.MoveBall.performed += OnMoveBall;
         mInput.Ball.MoveCamera.performed += OnMoveCamera;
+        mInput.Ball.SwitchDimension.performed += OnSwitchDimension;
 
         mInput.Enable();
+
+        Physics.IgnoreLayerCollision(_PlayerLayer, _InversePickupsLayer, true);
+        Physics.IgnoreLayerCollision(_InversePickupsLayer, _PlayerLayer, true);
+        _Camera.cullingMask = _NormalCameraLayerMask;
+
+        if (!_NormalPostProcessVolume || !_InvertedPostProcessVolume)
+        {
+            Debug.LogError("Missing a post processing volume on Player!");
+            return;
+        }
+
+        _NormalPostProcessVolume.profile.TryGetSettings(out mNormalLensDistortion);
+        _InvertedPostProcessVolume.profile.TryGetSettings(out mInvertedLensDistortion);
     }
 
     /// <summary>
@@ -91,7 +124,7 @@ public class BallMovement : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if ((_PickupMask & (1 << collision.gameObject.layer)) == 0)
+        if (collision.gameObject.layer != _PickupsLayer && collision.gameObject.layer != _InversePickupsLayer)
             return;
 
         Pickup pickup = collision.gameObject.GetComponent<Pickup>();
@@ -100,6 +133,22 @@ public class BallMovement : MonoBehaviour
             return;
 
         ProcessCollision(pickup);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer != _PortalLayer)
+            return;
+
+        mAbleToSwitchDimension = true;
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.layer != _PortalLayer)
+            return;
+
+        mAbleToSwitchDimension = false;
     }
 
     private void ProcessCollision(Pickup inPickup)
@@ -150,5 +199,64 @@ public class BallMovement : MonoBehaviour
         float scaleFactor = totalBounds.extents.magnitude / _BallCollider.bounds.extents.magnitude;
 
         _BallCollider.radius *= scaleFactor * _SizeAdjustPadding;
+    }
+
+    private void OnSwitchDimension(InputAction.CallbackContext obj)
+    {
+        if (!mAbleToSwitchDimension)
+            return;
+
+        SwitchPhysics();
+        SwitchCamera();
+        SwitchPostProcessVolume();
+    }
+
+    private void SwitchPhysics()
+    {
+        mInverseCollisionEnabled = !mInverseCollisionEnabled;
+
+        if (mInverseCollisionEnabled)
+        {
+            Physics.IgnoreLayerCollision(_PlayerLayer, _PickupsLayer, true);
+            Physics.IgnoreLayerCollision(_PlayerLayer, _InversePickupsLayer, false);
+        }
+        else
+        {
+            Physics.IgnoreLayerCollision(_PlayerLayer, _PickupsLayer, false);
+            Physics.IgnoreLayerCollision(_PlayerLayer, _InversePickupsLayer, true);
+        }
+    }
+
+    private void SwitchCamera()
+    {
+        _Camera.cullingMask = mInverseCollisionEnabled ? _InverseCameraLayerMask : _NormalCameraLayerMask;
+    }
+
+    private void SwitchPostProcessVolume()
+    {
+        _NormalPostProcessVolume.enabled = !mInverseCollisionEnabled;
+        _InvertedPostProcessVolume.enabled = mInverseCollisionEnabled;
+        StartCoroutine(AdjustLensDistortion());
+    }
+
+    IEnumerator AdjustLensDistortion()
+    {
+        mNormalLensDistortion.intensity.value = -100f;
+        mInvertedLensDistortion.intensity.value = -100f;
+
+        float elapsedTime = 0f;
+        float startValue = -100f;
+        float endValue = 0f;
+
+        while (elapsedTime < lerpDuration)
+        {
+            mNormalLensDistortion.intensity.value = Mathf.Lerp(startValue, endValue, elapsedTime / lerpDuration);
+            mInvertedLensDistortion.intensity.value = Mathf.Lerp(startValue, endValue, elapsedTime / lerpDuration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        mNormalLensDistortion.intensity.value = endValue;
+        mInvertedLensDistortion.intensity.value = endValue;
     }
 }

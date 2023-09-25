@@ -14,9 +14,9 @@ TagManager:
   - Player
   - Pickups
   - CollectedPickups
-  - 
-  - 
-  - 
+  - InversePickups
+  - PostProcessing
+  - Portal
   - 
   - 
   - 
