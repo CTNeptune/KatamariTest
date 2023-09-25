@@ -124,6 +124,10 @@ public class BallMovement : MonoBehaviour
         _FreeLookComponent.m_YAxis.Value += inputDelta.y;
     }
 
+    /// <summary>
+    /// If the player can pick up the collided object, do so.
+    /// </summary>
+    /// <param name="collision"></param>
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.layer != _PickupsLayer && collision.gameObject.layer != _InversePickupsLayer)
@@ -137,6 +141,10 @@ public class BallMovement : MonoBehaviour
         ProcessCollision(pickup);
     }
 
+    /// <summary>
+    /// Collide with a portal to enable the mAbleToSwitchDimension bool
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer != _PortalLayer)
@@ -145,6 +153,10 @@ public class BallMovement : MonoBehaviour
         mAbleToSwitchDimension = true;
     }
 
+    /// <summary>
+    /// Leave a portal's collider to disable the mAbleToSwitchDimension bool
+    /// </summary>
+    /// <param name="other"></param>
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.layer != _PortalLayer)
@@ -153,6 +165,10 @@ public class BallMovement : MonoBehaviour
         mAbleToSwitchDimension = false;
     }
 
+    /// <summary>
+    /// Used to determine if we should add the collided pickup or not.
+    /// </summary>
+    /// <param name="inPickup"></param>
     private void ProcessCollision(Pickup inPickup)
     {
         if (!IsCollidedObjectBigger(inPickup._Collider))
@@ -166,6 +182,13 @@ public class BallMovement : MonoBehaviour
         GamePlayManager.pInstance.AddToScore(_BallCollider.radius);
     }
 
+    /// <summary>
+    /// Calculates how big the collided object is and returns true or false depending on if the object is bigger than this player.
+    /// First checks the bounds of the collided object against the player's, then checks the scale against the player's.
+    /// This should cover both cases regardless if we've scaled the pickup or not.
+    /// </summary>
+    /// <param name="collider">The object we collided with</param>
+    /// <returns></returns>
     private bool IsCollidedObjectBigger(Collider collider)
     {
         Vector3 colliderSize = collider.bounds.size;
@@ -179,6 +202,10 @@ public class BallMovement : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// "Sticks" the Pickup object to the ball by creating a FixedJoint component and attaching to the ball.
+    /// </summary>
+    /// <param name="inPickup"></param>
     private void AddPickupToBall(Pickup inPickup)
     {
         inPickup.gameObject.layer = _PostCollectPickupLayer;
@@ -191,6 +218,10 @@ public class BallMovement : MonoBehaviour
         mCollectedPickups.Add(inPickup);
     }
 
+    /// <summary>
+    /// As more items are stuck to the ball, the collider underneath becomes obscured by the "stuck" colliders.
+    /// This increases the ball's collider as we stick more items to the ball so we can continue picking up items.
+    /// </summary>
     private void AdjustBallSize()
     {
         Bounds totalBounds = _BallCollider.bounds;
@@ -203,6 +234,12 @@ public class BallMovement : MonoBehaviour
         _BallCollider.radius *= scaleFactor * _SizeAdjustPadding;
     }
 
+    /// <summary>
+    /// Callback for the mInput.Ball.SwitchDimension.Performed event.
+    /// If we're able to switch dimensions (after colliding with a portal trigger)
+    /// Then switch which dimension we're in
+    /// </summary>
+    /// <param name="obj"></param>
     private void OnSwitchDimension(InputAction.CallbackContext obj)
     {
         if (!mAbleToSwitchDimension)
@@ -213,6 +250,9 @@ public class BallMovement : MonoBehaviour
         SwitchPostProcessVolume();
     }
 
+    /// <summary>
+    /// Changes the physics matrix so that we only collide with objects that we should collide with in our given dimension
+    /// </summary>
     private void SwitchPhysics()
     {
         mInverseCollisionEnabled = !mInverseCollisionEnabled;
@@ -239,11 +279,17 @@ public class BallMovement : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Switches what the camera sees based on which dimension we're in
+    /// </summary>
     private void SwitchCamera()
     {
         _Camera.cullingMask = mInverseCollisionEnabled ? _InverseCameraLayerMask : _NormalCameraLayerMask;
     }
 
+    /// <summary>
+    /// Switches which PostProcessVolume is active, then calls the AdjustLensDistortion coroutine
+    /// </summary>
     private void SwitchPostProcessVolume()
     {
         _NormalPostProcessVolume.enabled = !mInverseCollisionEnabled;
@@ -251,6 +297,9 @@ public class BallMovement : MonoBehaviour
         StartCoroutine(AdjustLensDistortion());
     }
 
+    /// <summary>
+    /// This changes the lens distortion intensity on both processing volumes to "pop" the view when switching dimensions
+    /// </summary>
     IEnumerator AdjustLensDistortion()
     {
         mNormalLensDistortion.intensity.value = -100f;

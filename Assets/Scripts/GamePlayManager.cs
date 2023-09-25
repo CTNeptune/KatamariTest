@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Cinemachine;
+using UnityEngine.UI;
 using System;
+using UnityEngine.SceneManagement;
 
-public class GamePlayManager : Singleton<GamePlayManager>
+public class GamePlayManager : MonoBehaviour
 {
+    public static GamePlayManager pInstance;
+
     public CinemachineFreeLook _FreeLookCamera;
     public float _MilestoneSize;
     public float _RadiusIncreasePerMilestone;
@@ -17,6 +21,17 @@ public class GamePlayManager : Singleton<GamePlayManager>
     public TextMeshProUGUI _ScoreText;
     private string mCachedScoreText;
 
+    public float _EndGameScore;
+    public TextMeshProUGUI _StartText;
+
+    public GameObject _Player;
+
+    public Canvas _StartCanvas;
+    public Canvas _GameCanvas;
+    public Canvas _EndCanvas;
+    public Button _StartButton;
+    public Button _EndButton;
+
     /// <summary>
     /// Initializes mCachedScoreText and updates the UI
     /// Then if no CinemachineFreeLook camera is assigned, assign it.
@@ -24,11 +39,41 @@ public class GamePlayManager : Singleton<GamePlayManager>
     /// </summary>
     private void Start()
     {
+        pInstance = this;
         mCachedScoreText = _ScoreText.text;
         UpdateScoreText();
 
         if (!_FreeLookCamera)
             _FreeLookCamera = FindObjectOfType<CinemachineFreeLook>();
+
+        _StartText.text = string.Format(_StartText.text, _EndGameScore);
+        _Player.SetActive(false);
+        _GameCanvas.gameObject.SetActive(false);
+        _StartCanvas.gameObject.SetActive(true);
+        _FreeLookCamera.gameObject.SetActive(false);
+        _StartButton.onClick.AddListener(() => StartGame());
+        _EndButton.onClick.AddListener(() => Restart());
+    }
+
+    /// <summary>
+    /// Starts the game by enabling the player, controls, and game canvas.
+    /// </summary>
+    private void StartGame()
+    {
+        _Player.SetActive(true);
+        _GameCanvas.gameObject.SetActive(true);
+        _FreeLookCamera.gameObject.SetActive(true);
+        _StartCanvas.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Restarts the level. Currently scene 0 since there's only one scene in the build.
+    /// </summary>
+    private void Restart()
+    {
+        _StartButton.onClick.RemoveAllListeners();
+        _EndButton.onClick.RemoveAllListeners();
+        SceneManager.LoadScene(0);
     }
 
     /// <summary>
@@ -55,6 +100,19 @@ public class GamePlayManager : Singleton<GamePlayManager>
 
         if(mMilestoneProgress > _MilestoneSize)
             UpdateCameraRig();
+
+        if (pScore > _EndGameScore)
+            ShowEndScreen();
+    }
+
+    /// <summary>
+    /// Shows the end screen and removes control from the player and camera.
+    /// </summary>
+    private void ShowEndScreen()
+    {
+        _Player.SetActive(false);
+        _EndCanvas.gameObject.SetActive(true);
+        _FreeLookCamera.gameObject.SetActive(false);
     }
 
     /// <summary>
