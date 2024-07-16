@@ -1,6 +1,10 @@
 # Katamensions
 
-Katamensions is a Katamari-like game where you navigate through two dimensions to grow your Katamari.
+Katamensions is a short Katamari-like proof of concept where you navigate through two dimensions to grow your Katamari.
+
+Short preview gif here:
+
+![katamensionsSmall](https://github.com/user-attachments/assets/61926b92-a523-4da1-b732-106989f753bb)
 
 ## Table of Contents
 - [About the Game](#about-the-game)
@@ -11,7 +15,7 @@ Katamensions is a Katamari-like game where you navigate through two dimensions t
 
 ## About the Game
 
-Katamensions is the result of a code test inspired by the Katamari series with the addition of dimension-switching mechanics.
+Katamensions was made as a request for a code test, inspired by the Katamari series with the addition of dimension-switching mechanics.
 
 ## Gameplay
 
@@ -19,7 +23,7 @@ Roll a sticky ball that grows as it collects objects. The twist is the ability t
 
 ## Installation
 
-1. Clone the repository using `git clone`.
+1. Clone the repository
 2. Open the project in Unity 2022.3.0f1
 3. Run the game within the Unity editor or build the game for your desired platform.
 
