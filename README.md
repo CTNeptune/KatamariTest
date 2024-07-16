@@ -20,10 +20,14 @@ Roll a sticky ball that grows as it collects objects. The twist is the ability t
 ## Installation
 
 1. Clone the repository using `git clone`.
-2. Open the project in Unity (ensure you're using a compatible version).
+2. Open the project in Unity 2022.3.0f1
 3. Run the game within the Unity editor or build the game for your desired platform.
 
 ## Controls
 
 - **Movement**: Use the WASD keys to move the Katamari.
 - **Dimension Switch**: Roll near a portal and press the Space Bar to switch between dimensions.
+
+## License
+
+Licensed under the MIT license.
